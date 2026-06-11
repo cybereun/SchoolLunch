@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF0F5" />
+      <stop offset="100%" stop-color="#FFFAF0" />
+    </linearGradient>
+    <!-- Tray Gradient -->
+    <linearGradient id="tray-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#FFE4E6" />
+    </linearGradient>
+    <!-- Milk Carton Details -->
+    <linearGradient id="milk-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFD1DC" />
+      <stop offset="100%" stop-color="#FF8E9E" />
+    </linearGradient>
+    <linearGradient id="soup-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FCD34D" />
+      <stop offset="100%" stop-color="#F59E0B" />
+    </linearGradient>
+    <!-- Soft Drop Shadow -->
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="125%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#F43F5E" flood-opacity="0.18" />
+    </filter>
+  </defs>
+
+  <!-- Round Icon Container (Squircle for App Icon style) -->
+  <rect width="512" height="512" rx="140" fill="url(#bg-grad)" />
+  
+  <!-- Outer border highlight -->
+  <rect x="2" y="2" width="508" height="508" rx="138" fill="none" stroke="#FCE7F3" stroke-width="6" />
+
+  <!-- The Lunch Tray with Shadow -->
+  <g filter="url(#shadow)">
+    <!-- Lunch Tray Base -->
+    <rect x="76" y="96" width="360" height="300" rx="44" fill="url(#tray-grad)" stroke="#FDA4AF" stroke-width="8" />
+    
+    <!-- Tray inner border divider recess -->
+    <rect x="86" y="106" width="340" height="280" rx="34" fill="none" stroke="#FFE4E6" stroke-width="4" />
+
+    <!-- 1. Rice Bowl Compartment (Left Bottom) -->
+    <rect x="108" y="244" width="138" height="122" rx="28" fill="#FFF1F2" stroke="#FECDD3" stroke-width="3" />
+    <!-- Rice Pile Representation (Multiple overlapping white shapes) -->
+    <ellipse cx="177" cy="305" rx="54" ry="42" fill="#FFFFFF" />
+    <ellipse cx="150" cy="295" rx="32" ry="26" fill="#FFFFFF" />
+    <ellipse cx="204" cy="295" rx="32" ry="26" fill="#FFFFFF" />
+    <ellipse cx="177" cy="280" rx="38" ry="28" fill="#FFFFFF" />
+    <!-- Rice grains detail (black sesame seeds) -->
+    <ellipse cx="177" cy="275" rx="3" ry="1.5" fill="#3F3F46" transform="rotate(-15,177,275)" />
+    <ellipse cx="165" cy="290" rx="3" ry="1.5" fill="#3F3F46" transform="rotate(30,165,290)" />
+    <ellipse cx="190" cy="285" rx="3" ry="1.5" fill="#3F3F46" transform="rotate(-40,190,285)" />
+    <ellipse cx="180" cy="300" rx="3" ry="1.5" fill="#3F3F46" transform="rotate(10,180,300)" />
+
+    <!-- 2. Soup Bowl Compartment (Right Bottom) -->
+    <rect x="266" y="244" width="138" height="122" rx="28" fill="#FFFDF5" stroke="#FEF3C7" stroke-width="3" />
+    <!-- Soup Liquid -->
+    <ellipse cx="335" cy="305" rx="52" ry="40" fill="url(#soup-grad)" />
+    <!-- Soup surface highlights/garnish (Green onion rings) -->
+    <ellipse cx="315" cy="295" rx="8" ry="4" fill="none" stroke="#34D399" stroke-width="3" />
+    <ellipse cx="355" cy="315" rx="8" ry="4" fill="none" stroke="#34D399" stroke-width="3" />
+    <ellipse cx="340" cy="290" rx="7" ry="3.5" fill="none" stroke="#A7F3D0" stroke-width="2.5" />
+    <!-- Floating tofu cuboid -->
+    <rect x="310" y="310" width="16" height="12" rx="3" fill="#FFFFFF" opacity="0.9" />
+    <rect x="345" y="298" width="14" height="11" rx="3" fill="#FFFFFF" opacity="0.9" />
+
+    <!-- 3. Side Dish 1 - Kimchi (Left Top) -->
+    <rect x="108" y="126" width="86" height="92" rx="22" fill="#FFF1F2" stroke="#FECDD3" stroke-width="3" />
+    <!-- Cute Kimchi bites -->
+    <path d="M125 145 C125 145, 132 140, 140 148 C145 154, 138 165, 132 162 Z" fill="#EF4444" />
+    <path d="M145 175 C145 175, 155 170, 162 180 C165 186, 155 195, 148 190 Z" fill="#DC2626" />
+    <path d="M152 148 C152 148, 162 145, 168 155 C172 162, 162 170, 156 166 Z" fill="#F87171" />
+    <!-- Sesame seed sprinkle on kimchi -->
+    <circle cx="135" cy="150" r="1.5" fill="#FBBF24" />
+    <circle cx="155" cy="180" r="1.5" fill="#FBBF24" />
+
+    <!-- 4. Side Dish 2 - Egg Roll / Rolled Omelette (Center Top) -->
+    <rect x="212" y="126" width="86" height="92" rx="22" fill="#FFFDF5" stroke="#FEF3C7" stroke-width="3" />
+    <!-- Egg Roll Slice 1 -->
+    <g transform="translate(222, 142)">
+      <rect x="0" y="0" width="42" height="26" rx="10" fill="#FBBF24" stroke="#F59E0B" stroke-width="2.5" />
+      <path d="M8 13 C12 7, 24 6, 32 13" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
+      <path d="M14 13 C18 10, 22 10, 26 13" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" />
+    </g>
+    <!-- Egg Roll Slice 2 -->
+    <g transform="translate(230, 174)">
+      <rect x="0" y="0" width="42" height="26" rx="10" fill="#FBBF24" stroke="#F59E0B" stroke-width="2.5" />
+      <path d="M8 13 C12 7, 24 6, 32 13" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
+    </g>
+
+    <!-- 5. Strawberry Milk Carton (Right Top) -->
+    <rect x="318" y="126" width="86" height="92" rx="22" fill="#FFF5F5" stroke="#FDE047" stroke-width="3" />
+    
+    <!-- Milk Carton Graphic (Isometric-leaning 2D representation) -->
+    <g transform="translate(334, 138)">
+      <!-- Carton Body -->
+      <rect x="4" y="14" width="46" height="38" rx="4" fill="#FFFFFF" stroke="#FFB7C5" stroke-width="2" />
+      <!-- Top Gable (Roof) -->
+      <path d="M4 14 L27 2 L50 14 Z" fill="#FFF2F4" stroke="#FFB7C5" stroke-width="2" stroke-linejoin="round" />
+      <!-- Strawberry Milk Label -->
+      <rect x="4" y="24" width="46" height="16" fill="url(#milk-grad)" />
+      <!-- Cute white letters 'MILK' -->
+      <text x="27" y="35" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-weight="900" font-size="9" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.5">MILK</text>
+      <!-- Tiny Strawberry drawing -->
+      <path d="M27 45 C26 45, 24 47, 25 49 C26 50, 28 50, 29 49 C30 47, 28 45, 27 45 Z" fill="#EF4444" />
+      <path d="M26 44 C27 44, 27 43, 27 43 C27 43, 28 44, 28 44" fill="none" stroke="#10B981" stroke-width="1" />
+    </g>
+  </g>
+
+  <!-- High-Gloss Bubble Shimmer Decor (Sparkles) -->
+  <g transform="translate(410, 85)" opacity="0.95">
+    <path d="M0 15 C8 15, 15 8, 15 0 C15 8, 22 15, 30 15 C22 15, 15 22, 15 30 C15 22, 8 15, 0 15 Z" fill="#FCD34D" />
+  </g>
+  <g transform="translate(85, 385)" opacity="0.9">
+    <path d="M0 10 C5 10, 10 5, 10 0 C10 5, 15 10, 20 10 C15 10, 10 15, 10 20 C10 15, 5 10, 0 10 Z" fill="#FF8E9E" />
+  </g>
+  <g transform="translate(425, 220)" opacity="0.8">
+    <circle cx="10" cy="10" r="8" fill="#FFFFFF" />
+    <circle cx="7" cy="7" r="3" fill="#FFE4E6" />
+  </g>
+
+</svg>

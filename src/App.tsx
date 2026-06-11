@@ -977,7 +977,7 @@ export default function App() {
 
         {/* Footer Area with instructions */}
         <footer className="mt-12 py-6 border-t border-pink-100 text-center">
-          <p className="text-[13px] sm:text-sm text-zinc-500 font-mono font-medium">© 2026 School Lunch Menu</p>
+          <p className="text-[13px] sm:text-sm text-zinc-500 font-mono font-medium">© 2026 School Lunch Menu · by cybereun</p>
         </footer>
 
         {/* Search Modal overlays */}
