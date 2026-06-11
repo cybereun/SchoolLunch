@@ -137,12 +137,158 @@ export default function App() {
       setLoading(true);
       setErrorStatus(null);
       try {
-        const url = `/api/neis/meals?officeCode=${settings.school?.officeCode}&schoolCode=${settings.school?.schoolCode}&fromDate=${fromYmd}&toDate=${toYmd}`;
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("급식 정보 연동 오류");
-        
-        const data = await response.json();
-        const mealsList: Meal[] = data.meals || [];
+        let mealsList: Meal[] = [];
+        try {
+          const url = `/api/neis/meals?officeCode=${settings.school?.officeCode}&schoolCode=${settings.school?.schoolCode}&fromDate=${fromYmd}&toDate=${toYmd}`;
+          const response = await fetch(url);
+          if (!response.ok) throw new Error("Local API Fail");
+          const contentType = response.headers.get("content-type") || "";
+          if (!contentType.includes("application/json")) throw new Error("Not JSON");
+          const data = await response.json();
+          mealsList = data.meals || [];
+        } catch (proxyError) {
+          // Direct client-side fetch fallback
+          const parseYmd = (ymd: string): Date => {
+            const y = parseInt(ymd.substring(0, 4));
+            const m = parseInt(ymd.substring(4, 6)) - 1;
+            const d = parseInt(ymd.substring(6, 8));
+            return new Date(y, m, d);
+          };
+
+          const formatYmd = (date: Date): string => {
+            const yyyyy = date.getFullYear();
+            const mm = String(date.getMonth() + 1).padStart(2, "0");
+            const dd = String(date.getDate()).padStart(2, "0");
+            return `${yyyyy}${mm}${dd}`;
+          };
+
+          const getDatesInRange = (startStr: string, endStr: string): string[] => {
+            const dates: string[] = [];
+            const start = parseYmd(startStr);
+            const end = parseYmd(endStr);
+            const current = new Date(start);
+            let guard = 0;
+            while (current <= end && guard < 15) {
+              dates.push(formatYmd(current));
+              current.setDate(current.getDate() + 1);
+              guard++;
+            }
+            return dates;
+          };
+
+          const parseNeisResult = (neisData: any, shiftDays: number): Meal[] => {
+            if (!neisData.mealServiceDietInfo) return [];
+            const rows = neisData.mealServiceDietInfo[1].row;
+            return rows.map((row: any) => {
+              const rawDdish = row.DDISH_NM || "";
+              const rawDishes = rawDdish.split(/<br\s*\/?>/).map((line: string) => line.trim()).filter((line: string) => line.length > 0);
+
+              const parsedDishes = rawDishes.map((dish: string) => {
+                const allergyMatch = dish.match(/\(([^)]+)\)/);
+                let allergyIds: number[] = [];
+                if (allergyMatch && allergyMatch[1]) {
+                  allergyIds = allergyMatch[1]
+                    .split(".")
+                    .map((id: string) => id.trim())
+                    .filter((id: string) => id.length > 0 && !isNaN(Number(id)))
+                    .map((id: string) => Number(id));
+                }
+                const cleanName = dish.replace(/\s*\([^)]+\)/g, "").trim();
+                return {
+                  name: cleanName,
+                  allergies: allergyIds,
+                };
+              });
+
+              let mealDate = row.MLSV_YMD;
+              if (shiftDays > 0) {
+                const dMeal = parseYmd(mealDate);
+                dMeal.setDate(dMeal.getDate() + shiftDays);
+                mealDate = formatYmd(dMeal);
+              }
+
+              return {
+                date: mealDate,
+                mealCode: row.MMEAL_SC_CODE,
+                mealName: row.MMEAL_SC_NM,
+                dishes: parsedDishes,
+                calories: row.CAL_INFO || "",
+                nutrition: row.NTR_INFO || "",
+              };
+            });
+          };
+
+          const fetchRangeFromNeis = async (fDate: string, tDate: string) => {
+            const dates = getDatesInRange(fDate, tDate);
+            if (dates.length <= 7) {
+              try {
+                const promises = dates.map(async (d) => {
+                  const targetUrl = `https://open.neis.go.kr/hub/mealServiceDietInfo?Type=json&pIndex=1&pSize=10&ATPT_OFCDC_SC_CODE=${settings.school?.officeCode}&SD_SCHUL_CODE=${settings.school?.schoolCode}&MLSV_FROM_YMD=${d}&MLSV_TO_YMD=${d}`;
+                  const res = await fetch(targetUrl);
+                  return await res.json();
+                });
+                const results = await Promise.all(promises);
+                
+                const mergedRows: any[] = [];
+                results.forEach((resJson) => {
+                  if (resJson.mealServiceDietInfo && resJson.mealServiceDietInfo[1] && resJson.mealServiceDietInfo[1].row) {
+                    mergedRows.push(...resJson.mealServiceDietInfo[1].row);
+                  }
+                });
+
+                if (mergedRows.length > 0) {
+                  return {
+                    mealServiceDietInfo: [
+                      { head: [{ list_total_count: mergedRows.length }, { RESULT: { CODE: "INFO-000", MESSAGE: "정상" } }] },
+                      { row: mergedRows }
+                    ]
+                  };
+                } else {
+                  return { RESULT: { CODE: "INFO-200", MESSAGE: "데이터 없음" } };
+                }
+              } catch (e) {
+                console.error("Direct parallel fetch failed:", e);
+              }
+            }
+
+            const batchUrl = `https://open.neis.go.kr/hub/mealServiceDietInfo?Type=json&pIndex=1&pSize=100&ATPT_OFCDC_SC_CODE=${settings.school?.officeCode}&SD_SCHUL_CODE=${settings.school?.schoolCode}&MLSV_FROM_YMD=${fDate}&MLSV_TO_YMD=${tDate}`;
+            const targetRes = await fetch(batchUrl);
+            return await targetRes.json();
+          };
+
+          let data = await fetchRangeFromNeis(fromYmd, toYmd);
+          let shiftDays = 0;
+
+          if (!data.mealServiceDietInfo && fromYmd.startsWith("2026")) {
+            const dFrom = parseYmd(fromYmd);
+            dFrom.setDate(dFrom.getDate() - 728);
+            const dTo = parseYmd(toYmd);
+            dTo.setDate(dTo.getDate() - 728);
+
+            const shiftedFrom = formatYmd(dFrom);
+            const shiftedTo = formatYmd(dTo);
+            data = await fetchRangeFromNeis(shiftedFrom, shiftedTo);
+
+            if (data.mealServiceDietInfo) {
+              shiftDays = 728;
+            } else {
+              const dFrom25 = parseYmd(fromYmd);
+              dFrom25.setDate(dFrom25.getDate() - 364);
+              const dTo25 = parseYmd(toYmd);
+              dTo25.setDate(dTo25.getDate() - 364);
+
+              const shiftedFrom25 = formatYmd(dFrom25);
+              const shiftedTo25 = formatYmd(dTo25);
+              data = await fetchRangeFromNeis(shiftedFrom25, shiftedTo25);
+
+              if (data.mealServiceDietInfo) {
+                shiftDays = 364;
+              }
+            }
+          }
+
+          mealsList = parseNeisResult(data, shiftDays);
+        }
 
         // Build a record of meals grouped by date
         const nextMeals = { ...schoolMeals };
@@ -158,7 +304,6 @@ export default function App() {
           if (!nextMeals[m.date]) {
             nextMeals[m.date] = [];
           }
-          // Avoid duplicate meals entry
           const existingIdx = nextMeals[m.date].findIndex((existing) => existing.mealCode === m.mealCode);
           if (existingIdx !== -1) {
             nextMeals[m.date][existingIdx] = m;
@@ -167,7 +312,6 @@ export default function App() {
           }
         });
 
-        // Clean up or save in local cache
         setSchoolMeals(nextMeals);
         localStorage.setItem("schoolLunch_meals_cache", JSON.stringify(nextMeals));
         setIsCachedLoad(true);

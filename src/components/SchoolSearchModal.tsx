@@ -21,11 +21,35 @@ export default function SchoolSearchModal({ onSelectSchool, onClose, canClose }:
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/neis/school-search?keyword=${encodeURIComponent(keyword)}`);
-      if (!response.ok) throw new Error("학교 검색 실패");
-      const data = await response.json();
-      setSchools(data.schools || []);
-      if (data.schools?.length === 0) {
+      let schoolsList: School[] = [];
+      try {
+        const response = await fetch(`/api/neis/school-search?keyword=${encodeURIComponent(keyword)}`);
+        if (!response.ok) throw new Error("Local API Fail");
+        const contentType = response.headers.get("content-type") || "";
+        if (!contentType.includes("application/json")) throw new Error("Not JSON");
+        const data = await response.json();
+        schoolsList = data.schools || [];
+      } catch (proxyError) {
+        // Fallback to direct client-side fetch to NEIS API (CORS is open on open.neis.go.kr)
+        const neisUrl = `https://open.neis.go.kr/hub/schoolInfo?Type=json&pIndex=1&pSize=50&SCHUL_NM=${encodeURIComponent(keyword)}`;
+        const neisRes = await fetch(neisUrl);
+        if (!neisRes.ok) throw new Error("NEIS API Direct Fail");
+        const neisData = await neisRes.json();
+        if (neisData.schoolInfo && neisData.schoolInfo[1] && neisData.schoolInfo[1].row) {
+          const rows = neisData.schoolInfo[1].row;
+          schoolsList = rows.map((row: any) => ({
+            officeCode: row.ATPT_OFCDC_SC_CODE,        // 시도교육청코드
+            officeName: row.ATPT_OFCDC_SC_NM,          // 시도교육청명
+            schoolCode: row.SD_SCHUL_CODE,            // 행정표준코드
+            schoolName: row.SCHUL_NM,                 // 학교명
+            address: row.ORG_RDNMA,                   // 도로명주소
+            schoolKind: row.SCHUL_KND_SC_NM,          // 학교종류 (고등학교, 중학교 등)
+          }));
+        }
+      }
+
+      setSchools(schoolsList);
+      if (schoolsList.length === 0) {
         setError("검색 결과가 없습니다. 학교 이름을 정확하게 입력해 주세요! 🧸 (예: '대구고', '서울과고')");
       }
     } catch (err: any) {
