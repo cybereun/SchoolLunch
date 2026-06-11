@@ -286,7 +286,7 @@ export default function MealCard({ meal, selectedAllergies, favorites, onToggleF
                         <div className="text-[11px] font-extrabold text-zinc-400 font-sans tracking-tight">
                           💡 3대 열량 영양소
                         </div>
-                        <div className="grid grid-cols-3 gap-2">
+                        <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
                           {majors.map((nut) => {
                             const meta = NUTRIENT_METADA[nut.name] || {
                               emoji: "🥗",
@@ -298,17 +298,19 @@ export default function MealCard({ meal, selectedAllergies, favorites, onToggleF
                             return (
                               <div
                                 key={nut.name}
-                                className={`p-2.5 rounded-xl ${meta.bgClass} flex flex-col justify-between`}
+                                className={`p-1.5 sm:p-2.5 rounded-xl ${meta.bgClass} flex flex-col justify-between items-center sm:items-stretch`}
                               >
-                                <div className="text-xs font-black text-zinc-800 flex items-center gap-1">
-                                  <span>{meta.emoji}</span>
-                                  <span className="truncate">{nut.name}</span>
+                                <div className="flex flex-col sm:flex-row items-center sm:items-center gap-0.5 sm:gap-1 text-center sm:text-left w-full justify-center sm:justify-start">
+                                  <span className="text-sm sm:text-xs shrink-0">{meta.emoji}</span>
+                                  <span className="text-[10px] sm:text-xs font-black text-zinc-800 tracking-tight sm:tracking-normal whitespace-nowrap">
+                                    {nut.name}
+                                  </span>
                                 </div>
-                                <div className="mt-2.5 text-right">
-                                  <span className="text-sm font-black text-zinc-805 tracking-tight">
+                                <div className="mt-1.5 sm:mt-2.5 text-center sm:text-right w-full">
+                                  <span className="text-xs sm:text-sm font-black text-zinc-800 tracking-tight">
                                     {nut.value}
                                   </span>
-                                  <span className="text-[10px] font-extrabold text-zinc-400 ml-0.5">
+                                  <span className="text-[8px] sm:text-[10px] font-extrabold text-zinc-400 ml-0.5">
                                     {nut.unit || "g"}
                                   </span>
                                 </div>
@@ -337,15 +339,15 @@ export default function MealCard({ meal, selectedAllergies, favorites, onToggleF
                             return (
                               <div
                                 key={nut.name}
-                                className={`flex items-center justify-between p-2 rounded-xl ${meta.bgClass}`}
+                                className={`flex items-center justify-between p-1.5 sm:p-2 rounded-xl ${meta.bgClass}`}
                               >
-                                <span className="text-xs font-bold text-zinc-650 flex items-center gap-1">
-                                  <span>{meta.emoji}</span>
+                                <span className="text-[10px] sm:text-xs font-bold text-zinc-650 flex items-center gap-0.5 sm:gap-1 min-w-0 mr-1">
+                                  <span className="shrink-0 text-sm sm:text-xs">{meta.emoji}</span>
                                   <span className="truncate">{nut.name}</span>
                                 </span>
-                                <span className="text-xs font-black text-zinc-800 shrink-0 font-mono">
+                                <span className="text-[10px] sm:text-xs font-black text-zinc-805 shrink-0 font-mono">
                                   {nut.value}
-                                  <span className="text-[9px] font-bold text-zinc-400 ml-0.5 font-sans">
+                                  <span className="text-[8px] sm:text-[9px] font-bold text-zinc-400 ml-0.5 font-sans">
                                     {nut.unit}
                                   </span>
                                 </span>
